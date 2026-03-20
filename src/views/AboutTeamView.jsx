@@ -55,7 +55,7 @@ export default function AboutTeamView({ lang = "vi" }) {
             <div style={{ display: "flex", alignItems: "center", gap: 16, padding: "16px 20px", background: "rgba(34,211,238,0.06)", border: "1px solid rgba(34,211,238,0.2)", borderRadius: 12, flex: "1 1 300px" }}>
               <img src="/images/logo_hub.png" alt="HUB" style={{ height: 60, borderRadius: 6, objectFit: "contain" }} />
               <div>
-                <div style={{ fontSize: 15, fontWeight: 700, color: "var(--cyan)", marginBottom: 4 }}>{isVi ? "Trường Đại học Ngân hàng TP.HCM" : "Ho Chi Minh City University of Banking"}</div>
+                <div style={{ fontSize: 15, fontWeight: 700, color: "var(--cyan)", marginBottom: 4 }}>{t.uni}</div>
                 <div style={{ fontSize: 12, color: "var(--text3)" }}>Ho Chi Minh University of Banking (HUB) · Est. 1976</div>
               </div>
             </div>
@@ -68,8 +68,8 @@ export default function AboutTeamView({ lang = "vi" }) {
                 <div style={{ display: "none", fontSize: 10, textAlign: "center", color: "var(--text3)", padding: 4 }}>Logo<br/>Khoa</div>
               </div>
               <div>
-                <div style={{ fontSize: 15, fontWeight: 700, color: "var(--purple)", marginBottom: 4 }}>{isVi ? "Khoa Khoa học Dữ liệu trong Kinh doanh" : "Faculty of Data Science in Business"}</div>
-                <div style={{ fontSize: 12, color: "var(--text3)" }}>{isVi ? "Đại học Ngân hàng TP.HCM" : "HUB"}</div>
+                <div style={{ fontSize: 15, fontWeight: 700, color: "var(--purple)", marginBottom: 4 }}>{t.faculty}</div>
+                <div style={{ fontSize: 12, color: "var(--text3)" }}>{t.uniShort}</div>
               </div>
             </div>
           </div>

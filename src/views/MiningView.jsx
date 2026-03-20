@@ -3,7 +3,7 @@ import { LANG } from '../data/lang.js';
 import { API } from '../utils/crypto.js';
 
 // ── Cyberpunk Block Card ─────────────────────────────────────────────────────
-function BlockCard({ block, index, isGenesis, onTamper, onRestore }) {
+function BlockCard({ block, index, isGenesis, onTamper, onRestore, t }) {
   const isValid = block.blockValid;
   const isTampered = block.tampered;
 
@@ -51,7 +51,7 @@ function BlockCard({ block, index, isGenesis, onTamper, onRestore }) {
           border: `1px solid ${isGenesis ? 'rgba(192,132,252,0.3)' : isValid ? 'rgba(56,189,248,0.3)' : 'rgba(251,113,133,0.4)'}`,
           boxShadow: `0 0 10px ${isGenesis ? 'rgba(192,132,252,0.1)' : isValid ? 'rgba(56,189,248,0.1)' : 'rgba(251,113,133,0.15)'}`,
         }}>
-          {isGenesis ? 'Genesis' : `Block #${block.index}`}
+          {isGenesis ? t.genesis : `${t.blockStr} #${block.index}`}
         </span>
         <div style={{
           width: 10, height: 10, borderRadius: '50%',
@@ -63,11 +63,11 @@ function BlockCard({ block, index, isGenesis, onTamper, onRestore }) {
 
       {/* Fields */}
       {[
-        { label: 'Time', value: new Date(block.timestamp).toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }), color: 'var(--text2)' },
-        { label: 'Data', value: block.data.slice(0, 22) + (block.data.length > 22 ? '...' : ''), color: 'var(--text)' },
-        { label: 'Nonce', value: block.nonce.toLocaleString(), color: 'var(--amber)' },
-        { label: 'Hash', value: block.hash.slice(0, 10) + '...', color: isValid ? 'var(--green)' : 'var(--red)' },
-        { label: 'Prev Hash', value: block.previousHash.slice(0, 10) + '...', color: 'var(--text3)' },
+        { label: t.timeStr, value: new Date(block.timestamp).toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }), color: 'var(--text2)' },
+        { label: t.dataStr, value: block.data.slice(0, 22) + (block.data.length > 22 ? '...' : ''), color: 'var(--text)' },
+        { label: t.nonceStr, value: block.nonce.toLocaleString(), color: 'var(--amber)' },
+        { label: t.hashStr, value: block.hash.slice(0, 10) + '...', color: isValid ? 'var(--green)' : 'var(--red)' },
+        { label: t.prevHashStr, value: block.previousHash.slice(0, 10) + '...', color: 'var(--text3)' },
       ].map(({ label, value, color }) => (
         <div key={label} style={{ marginBottom: 10 }}>
           <div style={{ fontSize: 9, fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '1.2px', marginBottom: 3 }}>{label}</div>
@@ -86,7 +86,7 @@ function BlockCard({ block, index, isGenesis, onTamper, onRestore }) {
             }}
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(251,113,133,0.25)'; e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(251,113,133,0.2)'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'rgba(251,113,133,0.1)'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
-            >TAMPER</button>
+            >{t.tamperBtn}</button>
           ) : (
             <button onClick={() => onRestore(block.index)} style={{
               flex: 1, padding: '8px 0', fontSize: 11, fontWeight: 700, fontFamily: 'var(--sans)', letterSpacing: '0.5px',
@@ -95,7 +95,7 @@ function BlockCard({ block, index, isGenesis, onTamper, onRestore }) {
             }}
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(56,189,248,0.25)'; e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(56,189,248,0.2)'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'rgba(56,189,248,0.1)'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
-            >RESTORE</button>
+            >{t.restoreBtn}</button>
           )}
         </div>
       )}
@@ -250,10 +250,10 @@ export default function MiningView({ lang = "vi" }) {
 
   const hashRate = elapsed > 0 ? Math.round(currentNonce / (elapsed / 1000)) : 0;
   const tabs = [
-    { id: "simulator", label: isVi ? "Simulator" : "Simulator" },
-    { id: "explorer", label: isVi ? "Explorer" : "Explorer" },
-    { id: "difficulty", label: isVi ? "Difficulty" : "Difficulty" },
-    { id: "education", label: isVi ? "Lý Thuyết" : "Theory" },
+    { id: "simulator", label: t.tabs.sim },
+    { id: "explorer", label: t.tabs.explorer },
+    { id: "difficulty", label: t.tabs.diff },
+    { id: "education", label: t.tabs.edu },
   ];
 
   return (
@@ -285,11 +285,11 @@ export default function MiningView({ lang = "vi" }) {
             {/* Title */}
             <div style={{ marginBottom: 32 }}>
               <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--cyan)', marginBottom: 8 }}>
-                Proof of Work
+                {t.pow}
               </div>
-              <h2 style={{ fontSize: 'clamp(24px,4vw,40px)', fontWeight: 900, letterSpacing: '-1px', marginBottom: 12 }}>Mining Simulator</h2>
+              <h2 style={{ fontSize: 'clamp(24px,4vw,40px)', fontWeight: 900, letterSpacing: '-1px', marginBottom: 12 }}>{t.simTitle}</h2>
               <p style={{ color: 'var(--text2)', fontSize: 15, maxWidth: 560, lineHeight: 1.7 }}>
-                {isVi ? "Tìm Nonce hợp lệ khiến SHA-256(data + nonce) có đủ số '0' dẫn đầu theo Difficulty yêu cầu." : "Find a valid Nonce so that SHA-256(data + nonce) starts with the required leading zeros for the Difficulty."}
+                {t.simDesc}
               </p>
             </div>
 
@@ -299,7 +299,7 @@ export default function MiningView({ lang = "vi" }) {
                 <div>
                   <div className="label">{t.blockData}</div>
                   <input className="inp" value={mineData} onChange={e => setMineData(e.target.value)}
-                    placeholder={isVi ? 'Nhập dữ liệu block...' : 'Enter block data...'}
+                    placeholder={t.blockDataPlaceholder}
                     disabled={mining} />
                 </div>
                 <div>
@@ -411,7 +411,7 @@ export default function MiningView({ lang = "vi" }) {
             {/* Tip */}
             <div className="anim-border" style={{ '--glow-color': 'var(--cyan)', padding: '16px 20px', background: 'rgba(192,132,252,0.03)', border: '1px solid rgba(192,132,252,0.12)', borderRadius: 14 }}>
               <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--cyan)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 6 }}>
-                {isVi ? "Nguyên lý hoạt động" : "How it works"}
+                {t.howItWorks}
               </div>
               <p style={{ fontSize: 14, color: 'var(--text2)', lineHeight: 1.8 }}>{t.miningTip}</p>
             </div>
@@ -422,12 +422,12 @@ export default function MiningView({ lang = "vi" }) {
         {activeSection === "explorer" && (
           <div style={{ animation: "fadeIn 0.3s ease" }}>
             <div style={{ marginBottom: 28 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--cyan)', marginBottom: 8 }}>Chain State</div>
+              <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--cyan)', marginBottom: 8 }}>{t.chainState}</div>
               <h2 style={{ fontSize: 'clamp(22px,3vw,36px)', fontWeight: 900, letterSpacing: '-0.5px', marginBottom: 10 }}>{t.expTitle}</h2>
               <p style={{ color: 'var(--text2)', fontSize: 14, marginBottom: 20 }}>{t.expDesc}</p>
               <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
-                <button className="btn btn-primary btn-sm" onClick={addBlock}>+ Add Block</button>
-                <button className="btn btn-ghost btn-sm" onClick={resetChain}>Reset</button>
+                <button className="btn btn-primary btn-sm" onClick={addBlock}>{t.addBlockBtn}</button>
+                <button className="btn btn-ghost btn-sm" onClick={resetChain}>{t.resetBtn}</button>
                 {chain && (
                   <div style={{
                     marginLeft: 'auto', padding: '6px 14px',
@@ -455,6 +455,7 @@ export default function MiningView({ lang = "vi" }) {
                       isGenesis={i === 0}
                       onTamper={(idx) => { setTamperIdx(idx); setTamperText(""); }}
                       onRestore={doRestore}
+                      t={t}
                     />
                   </React.Fragment>
                 ))}
@@ -469,14 +470,14 @@ export default function MiningView({ lang = "vi" }) {
                 background: 'rgba(251,113,133,0.04)', border: '1px solid rgba(251,113,133,0.3)', borderRadius: 16,
               }}>
                 <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--red)', marginBottom: 8 }}>
-                  Tamper Block #{tamperIdx}
+                  {t.tamperBlock} #{tamperIdx}
                 </div>
                 <p style={{ fontSize: 13, color: 'var(--text2)', marginBottom: 14, lineHeight: 1.7 }}>{t.tamperDesc}</p>
                 <div style={{ display: 'flex', gap: 10 }}>
                   <input className="inp" style={{ flex: 1 }} value={tamperText}
-                    onChange={e => setTamperText(e.target.value)} placeholder={isVi ? 'Nhập data giả...' : 'Enter fake data...'} />
-                  <button className="btn btn-sm" onClick={() => doTamper(tamperIdx)} style={{ background: 'rgba(248,113,113,0.15)', border: '1px solid rgba(248,113,113,0.4)', color: 'var(--red)' }}>Tamper</button>
-                  <button className="btn btn-ghost btn-sm" onClick={() => setTamperIdx(null)}>Cancel</button>
+                    onChange={e => setTamperText(e.target.value)} placeholder={t.fakeDataPlaceholder} />
+                  <button className="btn btn-sm" onClick={() => doTamper(tamperIdx)} style={{ background: 'rgba(248,113,113,0.15)', border: '1px solid rgba(248,113,113,0.4)', color: 'var(--red)' }}>{t.tamperBtn}</button>
+                  <button className="btn btn-ghost btn-sm" onClick={() => setTamperIdx(null)}>{t.cancelBtn}</button>
                 </div>
               </div>
             )}
@@ -487,7 +488,7 @@ export default function MiningView({ lang = "vi" }) {
         {activeSection === "difficulty" && (
           <div style={{ animation: "fadeIn 0.3s ease" }}>
             <div style={{ marginBottom: 32 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--purple)', marginBottom: 8 }}>Network Setting</div>
+              <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--purple)', marginBottom: 8 }}>{t.networkSetting}</div>
               <h2 style={{ fontSize: 'clamp(22px,3vw,36px)', fontWeight: 900, letterSpacing: '-0.5px', marginBottom: 10 }}>{t.diffTitle}</h2>
               <p style={{ color: 'var(--text2)', fontSize: 14 }}>{t.diffDesc}</p>
             </div>
@@ -543,7 +544,7 @@ export default function MiningView({ lang = "vi" }) {
                     <div style={{ fontFamily: 'var(--mono)', fontSize: 13, color: 'var(--amber)', fontWeight: 700 }}>
                       ~{Math.pow(16, d).toLocaleString()}
                     </div>
-                    <div style={{ fontSize: 10, color: 'var(--text3)' }}>{isVi ? 'lần thử' : 'attempts'}</div>
+                    <div style={{ fontSize: 10, color: 'var(--text3)' }}>{t.attempts}</div>
                   </div>
                 </div>
               ))}
@@ -565,63 +566,44 @@ export default function MiningView({ lang = "vi" }) {
         {activeSection === "education" && (
           <div style={{ animation: "fadeIn 0.3s ease" }}>
             <div style={{ marginBottom: 32 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--blue)', marginBottom: 8 }}>{isVi ? "Học thuật" : "Knowledge Base"}</div>
-              <h2 style={{ fontSize: 'clamp(22px,3vw,36px)', fontWeight: 900, letterSpacing: '-0.5px' }}>{isVi ? "Lý Thuyết Mining" : "Mining Theory"}</h2>
+              <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--blue)', marginBottom: 8 }}>{t.kb}</div>
+              <h2 style={{ fontSize: 'clamp(22px,3vw,36px)', fontWeight: 900, letterSpacing: '-0.5px' }}>{t.theoryTitle}</h2>
             </div>
             <div style={{ display: 'grid', gap: 20 }}>
               {[
                 {
-                  color: 'var(--cyan)', label: 'Concept 01',
-                  title: isVi ? 'Mining là gì?' : 'What is Mining?',
-                  body: isVi
-                    ? (<><p><strong style={{ color: 'var(--cyan)' }}>Mining (Đào)</strong> là quá trình tìm một giá trị <strong style={{ color: 'var(--amber)' }}>nonce</strong> (số nguyên bắt đầu từ 0) sao cho khi băm toàn bộ nội dung block, kết quả bắt đầu bằng đủ số '0' theo yêu cầu.</p><div style={{ marginTop: 14, background: 'var(--bg-input)', border: '1px solid var(--border)', borderLeft: '3px solid var(--cyan)', borderRadius: 10, padding: '12px 16px', fontFamily: 'var(--mono)', fontSize: 12, lineHeight: 1.9 }}>SHA256(index + timestamp + data + prevHash + <span style={{ color: 'var(--amber)' }}>nonce</span>)<br /><span style={{ color: 'var(--green)' }}>→ "000abc91f..." ✓ Hợp lệ</span></div></>)
-                    : (<><p><strong style={{ color: 'var(--cyan)' }}>Mining</strong> is the process of finding a <strong style={{ color: 'var(--amber)' }}>nonce</strong> value so that hashing the full block content produces a hash starting with enough zeros.</p><div style={{ marginTop: 14, background: 'var(--bg-input)', border: '1px solid var(--border)', borderLeft: '3px solid var(--cyan)', borderRadius: 10, padding: '12px 16px', fontFamily: 'var(--mono)', fontSize: 12, lineHeight: 1.9 }}>SHA256(index + timestamp + data + prevHash + <span style={{ color: 'var(--amber)' }}>nonce</span>)<br /><span style={{ color: 'var(--green)' }}>→ "000abc91f..." ✓ Valid</span></div></>),
+                  color: 'var(--cyan)', label: `${t.concept} 01`,
+                  title: t.concept1Title,
+                  body: (<><p>{t.concept1P1}</p><div style={{ marginTop: 14, background: 'var(--bg-input)', border: '1px solid var(--border)', borderLeft: '3px solid var(--cyan)', borderRadius: 10, padding: '12px 16px', fontFamily: 'var(--mono)', fontSize: 12, lineHeight: 1.9 }}>SHA256(index + timestamp + data + prevHash + <span style={{ color: 'var(--amber)' }}>nonce</span>)<br /><span style={{ color: 'var(--green)' }}>→ "000abc91f..." ✓ {t.concept1Valid}</span></div></>),
                 },
                 {
-                  color: 'var(--amber)', label: 'Concept 02',
-                  title: isVi ? 'Nonce là gì?' : 'What is a Nonce?',
-                  body: isVi
-                    ? (<><p><strong style={{ color: 'var(--amber)' }}>Nonce</strong> (Number used ONCE) là con số duy nhất miner có thể thay đổi, bắt đầu từ 0 tăng dần. Miner thử từng giá trị cho đến khi tìm được hash hợp lệ.</p><p style={{ color: 'var(--text2)', marginTop: 10 }}>Không thể dự đoán trước nonce cần tìm. Đây là lý do mining tiêu tốn rất nhiều tài nguyên tính toán.</p></>)
-                    : (<><p><strong style={{ color: 'var(--amber)' }}>Nonce</strong> (Number used ONCE) is the only value a miner can change, starting at 0 and incrementing. The miner tries each value until a valid hash is found.</p><p style={{ color: 'var(--text2)', marginTop: 10 }}>The correct nonce cannot be predicted. This is why mining is computationally expensive.</p></>),
+                  color: 'var(--amber)', label: `${t.concept} 02`,
+                  title: t.concept2Title,
+                  body: (<><p>{t.concept2P1}</p><p style={{ color: 'var(--text2)', marginTop: 10 }}>{t.concept2P2}</p></>),
                 },
                 {
-                  color: 'var(--purple)', label: 'Concept 03',
-                  title: isVi ? 'Difficulty hoạt động ra sao?' : 'How does Difficulty work?',
-                  body: isVi
-                    ? (<div style={{ display: 'grid', gap: 8, marginTop: 4 }}>
+                  color: 'var(--purple)', label: `${t.concept} 03`,
+                  title: t.concept3Title,
+                  body: (<div style={{ display: 'grid', gap: 8, marginTop: 4 }}>
                       {[1, 2, 3, 4, 5].map(d => (
                         <div key={d} style={{ display: 'flex', alignItems: 'center', gap: 12, fontFamily: 'var(--mono)', fontSize: 13, padding: '8px 12px', background: 'var(--bg-input)', borderRadius: 8 }}>
                           <span style={{ color: 'var(--purple)', minWidth: 60 }}>Diff = {d}</span>
                           <span style={{ color: 'var(--green)', fontWeight: 700 }}>{"0".repeat(d)}</span>
                           <span style={{ color: 'var(--text3)' }}>{"x".repeat(10)}</span>
-                          <span style={{ marginLeft: 'auto', color: 'var(--amber)', fontSize: 12 }}>~{Math.pow(16, d).toLocaleString()} lần thử</span>
+                          <span style={{ marginLeft: 'auto', color: 'var(--amber)', fontSize: 12 }}>~{Math.pow(16, d).toLocaleString()} {t.attempts}</span>
                         </div>
                       ))}
                     </div>)
-                    : (<div style={{ display: 'grid', gap: 8, marginTop: 4 }}>
-                      {[1, 2, 3, 4, 5].map(d => (
-                        <div key={d} style={{ display: 'flex', alignItems: 'center', gap: 12, fontFamily: 'var(--mono)', fontSize: 13, padding: '8px 12px', background: 'var(--bg-input)', borderRadius: 8 }}>
-                          <span style={{ color: 'var(--purple)', minWidth: 60 }}>Diff = {d}</span>
-                          <span style={{ color: 'var(--green)', fontWeight: 700 }}>{"0".repeat(d)}</span>
-                          <span style={{ color: 'var(--text3)' }}>{"x".repeat(10)}</span>
-                          <span style={{ marginLeft: 'auto', color: 'var(--amber)', fontSize: 12 }}>~{Math.pow(16, d).toLocaleString()} attempts</span>
-                        </div>
-                      ))}
-                    </div>),
                 },
                 {
-                  color: 'var(--green)', label: 'Concept 04',
-                  title: isVi ? 'Tại sao Mining bảo vệ Blockchain?' : 'Why does Mining protect Blockchain?',
-                  body: isVi
-                    ? (<><p>Khi sửa data của một block, <strong style={{ color: 'var(--red)' }}>hash thay đổi hoàn toàn</strong> → previousHash của block tiếp theo không khớp → toàn bộ chain phía sau bị invalid.</p><p style={{ color: 'var(--text2)', marginTop: 10 }}>Để tấn công, hacker phải <strong>mine lại tất cả block phía sau</strong> nhanh hơn toàn bộ mạng lưới phân tán trên toàn thế giới — điều gần như bất khả thi.</p></>)
-                    : (<><p>Modifying a block's data <strong style={{ color: 'var(--red)' }}>completely changes its hash</strong> → the next block's previousHash no longer matches → the entire chain after it is invalid.</p><p style={{ color: 'var(--text2)', marginTop: 10 }}>To attack, a hacker must <strong>re-mine all subsequent blocks</strong> faster than the entire globally distributed network — virtually impossible.</p></>),
+                  color: 'var(--green)', label: `${t.concept} 04`,
+                  title: t.concept4Title,
+                  body: (<><p>{t.concept4P1}</p><p style={{ color: 'var(--text2)', marginTop: 10 }}>{t.concept4P2}</p></>),
                 },
                 {
-                  color: 'var(--red)', label: 'Concept 05',
-                  title: isVi ? 'Proof of Work (PoW) là gì?' : 'What is Proof of Work?',
-                  body: isVi
-                    ? (<><p><strong style={{ color: 'var(--red)' }}>Proof of Work</strong> là bằng chứng chứng minh miner đã tiêu tốn năng lực tính toán thực sự để tìm hash hợp lệ.</p><p style={{ color: 'var(--text2)', marginTop: 10 }}>Các node khác chỉ cần <strong style={{ color: 'var(--green)' }}>1 phép tính</strong> để xác minh tính hợp lệ của hash, nhưng miner cần <strong style={{ color: 'var(--amber)' }}>hàng triệu phép tính</strong> để tìm ra. Đây chính là cơ chế đồng thuận cốt lõi của Bitcoin.</p></>)
-                    : (<><p><strong style={{ color: 'var(--red)' }}>Proof of Work</strong> is evidence that a miner expended real computational effort to find a valid hash.</p><p style={{ color: 'var(--text2)', marginTop: 10 }}>Other nodes only need <strong style={{ color: 'var(--green)' }}>1 computation</strong> to verify, but the miner needed <strong style={{ color: 'var(--amber)' }}>millions</strong> to find it. This is Bitcoin's core consensus mechanism.</p></>),
+                  color: 'var(--red)', label: `${t.concept} 05`,
+                  title: t.concept5Title,
+                  body: (<><p>{t.concept5P1}</p><p style={{ color: 'var(--text2)', marginTop: 10 }}>{t.concept5P2}</p></>),
                 },
               ].map((item, i) => (
                 <div key={i} className="card" style={{ animation: `fadeInUp 0.4s ${i * 0.07}s both`, borderLeft: `3px solid ${item.color}`, padding: '24px 28px' }}>

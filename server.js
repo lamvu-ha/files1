@@ -18,6 +18,28 @@ const path_m = require('path');
 const PORT = process.env.PORT || 3001;
 
 // ═══════════════════════════════════════════════════════════════
+// READ .env FILE (pure Node.js — no dotenv package needed)
+// ═══════════════════════════════════════════════════════════════
+try {
+  const envPath = path_m.join(__dirname, '.env');
+  if (fs.existsSync(envPath)) {
+    const envText = fs.readFileSync(envPath, 'utf8');
+    for (const line of envText.split('\n')) {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith('#')) continue;
+      const eqIdx = trimmed.indexOf('=');
+      if (eqIdx < 1) continue;
+      const key = trimmed.slice(0, eqIdx).trim();
+      const val = trimmed.slice(eqIdx + 1).trim().replace(/^["']|["']$/g, '');
+      if (key && !process.env[key]) process.env[key] = val;
+    }
+    console.log('[BlockEdu] .env loaded successfully.');
+  }
+} catch (envErr) {
+  console.warn('[BlockEdu] Could not read .env:', envErr.message);
+}
+
+// ═══════════════════════════════════════════════════════════════
 // BLOCKCHAIN CORE (Mirrors Java: Block.java, Blockchain.java,
 //                  ProofOfWork.java, HashUtil.java)
 // ═══════════════════════════════════════════════════════════════
@@ -354,6 +376,75 @@ const server = http.createServer(async (req, res) => {
         valid: blockchain.isChainValid(),
         blockValidities: blockchain.getBlockValidities()
       });
+
+    // ── POST /api/chat ────────────────────────────────────────
+    // AI chatbot endpoint — proxies to OpenAI GPT-4o-mini
+    } else if (path === '/api/chat' && req.method === 'POST') {
+      const body = await readBody(req);
+      const { message = '', context = {} } = body;
+
+      if (!message.trim()) { json(res, { error: 'message is required' }, 400); return; }
+      if (message.length > 2000) { json(res, { error: 'message too long' }, 400); return; }
+
+      const apiKey = (process.env.OPENAI_API_KEY || '').trim();
+      if (!apiKey) {
+        json(res, { error: 'OpenAI API key not configured. Please add OPENAI_API_KEY to your .env file.' }, 503);
+        return;
+      }
+
+      const lang = (context.lang || 'vi').toLowerCase();
+      const currentPage = context.current_page || 'home';
+      const isVi = lang === 'vi';
+      const systemPrompt = isVi
+        ? `Bạn là AI Assistant của BlockEdu Pro — ứng dụng web giáo dục Blockchain cho sinh viên.
+Trang hiện tại: "${currentPage}"
+Trả lời Tiếng Việt, thân thiện, ngắn gọn. Tập trung vào blockchain, mật mã học, hướng dẫn app.`
+        : `You are BlockEdu Pro's AI Assistant — a blockchain education web app.
+Current page: "${currentPage}"
+Reply in English, friendly and concise. Focus on blockchain, cryptography, app guidance.`;
+
+      const history = Array.isArray(context.history) ? context.history : [];
+      const oaiMessages = [
+        { role: 'system', content: systemPrompt },
+        ...history.slice(-8),
+        { role: 'user', content: message.trim() },
+      ];
+
+      const payload = JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: oaiMessages,
+        max_tokens: 600,
+        temperature: 0.7,
+      });
+
+      const reply = await new Promise((resolve, reject) => {
+        const https = require('https');
+        let data = '';
+        const req2 = https.request({
+          hostname: 'api.openai.com', port: 443,
+          path: '/v1/chat/completions', method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Length': Buffer.byteLength(payload),
+          },
+        }, (r) => {
+          r.on('data', c => data += c);
+          r.on('end', () => {
+            try {
+              const p = JSON.parse(data);
+              if (p.error) reject(new Error(p.error.message || 'OpenAI error'));
+              else resolve((p.choices?.[0]?.message?.content || '').trim());
+            } catch(e) { reject(new Error('Parse error: ' + data.slice(0,100))); }
+          });
+        });
+        req2.setTimeout(20000, () => { req2.destroy(); reject(new Error('Timeout')); });
+        req2.on('error', reject);
+        req2.write(payload);
+        req2.end();
+      });
+
+      json(res, { reply });
 
     // ── GET /health ───────────────────────────────────────────
     } else if (path === '/health') {

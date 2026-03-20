@@ -106,7 +106,7 @@ export default function HashDemoView({ lang = "vi" }) {
               <p style={{ fontSize: 13, color: "var(--text2)", marginBottom: 20 }}>{t.genDesc}</p>
 
               <div className="label">{t.inputText}</div>
-              <textarea className="inp" style={{ marginBottom: 16 }} value={input} onChange={e => setInput(e.target.value)} placeholder={lang === 'vi' ? 'Nhập văn bản cần hash...' : 'Type your message here...'} />
+              <textarea className="inp" style={{ marginBottom: 16 }} value={input} onChange={e => setInput(e.target.value)} placeholder={t.genPlaceholder} />
 
               <div className="label">{t.hashOutput}
                 <span style={{ marginLeft: 8, fontFamily: "var(--mono)", fontSize: 10, color: "var(--cyan)", textTransform: "none", fontWeight: 400 }}>
@@ -135,10 +135,10 @@ export default function HashDemoView({ lang = "vi" }) {
                       ))}
                     </div>
                     <div style={{ marginTop: 10, fontSize: 11, color: "var(--text3)", display: "flex", gap: 16, flexWrap: "wrap" }}>
-                      <span>Algorithm: <span style={{ color: "var(--cyan)" }}>SHA-256</span></span>
-                      <span>Size: <span style={{ color: "var(--cyan)" }}>256 bits</span></span>
-                      <span>Hex chars: <span style={{ color: "var(--green)" }}>{hash.length}</span></span>
-                      <span>Input bytes: <span style={{ color: "var(--amber)" }}>{new TextEncoder().encode(input).length}</span></span>
+                      <span>{t.algoLabel} <span style={{ color: "var(--cyan)" }}>SHA-256</span></span>
+                      <span>{t.sizeLabel} <span style={{ color: "var(--cyan)" }}>256 bits</span></span>
+                      <span>{t.hexLabel} <span style={{ color: "var(--green)" }}>{hash.length}</span></span>
+                      <span>{t.inputBytesLabel} <span style={{ color: "var(--amber)" }}>{new TextEncoder().encode(input).length}</span></span>
                     </div>
                   </div>
                 ) : null}
@@ -175,15 +175,15 @@ export default function HashDemoView({ lang = "vi" }) {
                           </code>
                         </div>
                         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                          <span style={{ fontSize: 11, color: "var(--text3)" }}>Input: <span style={{ color: "var(--amber)", fontFamily: "var(--mono)" }}>{ex.input.length} chars</span></span>
-                          <span style={{ fontSize: 11, color: "var(--text3)" }}>→ Output: <span style={{ color: "var(--green)", fontFamily: "var(--mono)" }}>{h.length || "..."} chars ✓</span></span>
+                          <span style={{ fontSize: 11, color: "var(--text3)" }}>{t.inputLen} <span style={{ color: "var(--amber)", fontFamily: "var(--mono)" }}>{ex.input.length} {t.chars}</span></span>
+                          <span style={{ fontSize: 11, color: "var(--text3)" }}>{t.outputLen} <span style={{ color: "var(--green)", fontFamily: "var(--mono)" }}>{h.length || "..."} {t.chars} ✓</span></span>
                         </div>
                       </div>
                       <div style={{ padding: "12px 16px" }}>
                         {h ? (
                           <span className="hash-display" style={{ fontSize: 12 }}>{h.slice(0,32)}<br/>{h.slice(32)}</span>
                         ) : (
-                          <span style={{ color: "var(--text3)", fontSize: 12 }}>Computing...</span>
+                          <span style={{ color: "var(--text3)", fontSize: 12 }}>{t.computingSimple}</span>
                         )}
                       </div>
                     </div>
@@ -209,11 +209,11 @@ export default function HashDemoView({ lang = "vi" }) {
 
               <div className="grid-2" style={{ marginBottom: 20 }}>
                 <div>
-                  <div className="label">Input A</div>
+                  <div className="label">{t.inputA}</div>
                   <input className="inp" value={av1} onChange={e => setAv1(e.target.value)} />
                 </div>
                 <div>
-                  <div className="label">Input B <span style={{ color: "var(--amber)", textTransform: "none", fontSize: 10, fontWeight: 400 }}>(try changing one character)</span></div>
+                  <div className="label">{t.inputB} <span style={{ color: "var(--amber)", textTransform: "none", fontSize: 10, fontWeight: 400 }}>{t.tryChanging}</span></div>
                   <input className="inp" value={av2} onChange={e => setAv2(e.target.value)} />
                 </div>
               </div>
@@ -240,7 +240,7 @@ export default function HashDemoView({ lang = "vi" }) {
               {/* Hash grids */}
               {h1 && h2 && (
                 <div className="grid-2">
-                  {[{ label: `Hash A ("${av1.slice(0,20)}${av1.length>20?"...":""}") `, h: h1, other: h2 }, { label: `Hash B ("${av2.slice(0,20)}${av2.length>20?"...":""}") `, h: h2, other: h1 }].map(({ label, h, other }) => (
+                  {[{ label: `${t.hashA} ("${av1.slice(0,20)}${av1.length>20?"...":""}") `, h: h1, other: h2 }, { label: `${t.hashB} ("${av2.slice(0,20)}${av2.length>20?"...":""}") `, h: h2, other: h1 }].map(({ label, h, other }) => (
                     <div key={label} style={{ background: "var(--bg1)", border: "1px solid var(--border)", borderRadius: 14, padding: 14 }}>
                       <div style={{ fontSize: 11, color: "var(--text3)", marginBottom: 10, fontFamily: "var(--mono)" }}>{label}</div>
                       <div className="hex-grid">

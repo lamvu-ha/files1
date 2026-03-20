@@ -3,7 +3,7 @@ import { LANG } from '../data/lang.js';
 import { API, apiHash, sha256browser } from '../utils/crypto.js';
 import BlockchainCanvas from '../components/BlockchainCanvas.jsx';
 
-function DigitalClock() {
+function DigitalClock({ t }) {
   const [uptime, setUptime] = useState("00:00:00");
   const [genesisTime, setGenesisTime] = useState(null);
   const [error, setError] = useState(false);
@@ -54,7 +54,7 @@ function DigitalClock() {
       letterSpacing: '1px',
       fontWeight: 600,
     }}>
-      <span style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '1px', marginRight: 2 }}>Uptime</span>
+      <span style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '1px', marginRight: 2 }}>{t.uptime}</span>
       <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: 'var(--cyan)', boxShadow: '0 0 10px var(--cyan)', animation: 'blink 1s infinite' }} />
       {uptime}
     </div>
@@ -123,7 +123,7 @@ export default function HomeView({ setTab, lang = "vi" }) {
           <div style={{ animation: "fadeIn 0.7s ease" }}>
             <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 14, marginBottom: 22, flexWrap: "wrap" }}>
               <span className="badge badge-cyan" style={{ fontSize: 12, padding: "5px 14px" }}>{t.badge}</span>
-              <DigitalClock />
+              <DigitalClock t={t} />
             </div>
 
             <h1 style={{ fontFamily: "var(--sans)", fontSize: "clamp(36px, 7vw, 72px)", fontWeight: 900, lineHeight: 1.05, letterSpacing: "-3px", marginBottom: 18 }}>
@@ -194,14 +194,14 @@ export default function HomeView({ setTab, lang = "vi" }) {
           <div className="live-demo-grid">
             <div>
               <div className="label">{t.inputLabel}</div>
-              <input className="inp" value={demoInput} onChange={e => setDemoInput(e.target.value)} placeholder={lang === 'vi' ? 'Nhập văn bản...' : 'Enter text...'} />
+              <input className="inp" value={demoInput} onChange={e => setDemoInput(e.target.value)} placeholder={t.inputPlaceholder} />
             </div>
             <div className="live-demo-arrow">→</div>
             <div>
               <div className="label">{t.outputLabel} <span style={{ color: "var(--cyan)", textTransform: "none" }}>({t.alwaysChars})</span></div>
               <div style={{ minHeight: 46, padding: "12px 16px", background: "var(--bg-input)", border: "1px solid var(--border)", borderRadius: 12 }}>
                 {computing ? (
-                  <span style={{ color: "var(--text3)", fontSize: 12 }}>⏳ computing...</span>
+                  <span style={{ color: "var(--text3)", fontSize: 12 }}>{t.computingStr}</span>
                 ) : (
                   <span className="hash-display" style={{ fontSize: 11, lineHeight: 1.9 }}>
                     {demoHash.slice(0, 32)}<br />{demoHash.slice(32)}

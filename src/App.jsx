@@ -6,6 +6,8 @@ import HashDemoView from './views/HashDemoView.jsx';
 import MiningView from './views/MiningView.jsx';
 import AboutProjectView from './views/AboutProjectView.jsx';
 import AboutTeamView from './views/AboutTeamView.jsx';
+import ParticleBackground from './components/ParticleBackground.jsx';
+import Chatbot from './components/Chatbot.jsx';
 
 function HamburgerIcon() {
   return (
@@ -56,6 +58,7 @@ export default function App() {
 
   return (
     <>
+      <ParticleBackground />
       {/* Top Navigation */}
       <nav className="nav">
         <div className="nav-inner">
@@ -116,11 +119,14 @@ export default function App() {
       <footer style={{ background: "var(--bg1)", borderTop: "1px solid var(--border)", padding: "24px", textAlign: "center" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", fontSize: 12, color: "var(--text3)", lineHeight: 2 }}>
           <strong style={{ color: "var(--cyan)" }}>CryptoHash Demo</strong> · {t.footer} &nbsp;·&nbsp;
-          Built with React 18 &amp; Node.js &nbsp;·&nbsp;
+          {t.footerBuilt} &nbsp;·&nbsp;
           <img src="/images/logo_hub.png" alt="HUB Logo" style={{ height: 20, verticalAlign: "middle", marginLeft: 6, borderRadius: 3 }} />
-          <span style={{ marginLeft: 6, fontSize: 11 }}>ĐH Ngân hàng TP.HCM</span>
+          <span style={{ marginLeft: 6, fontSize: 11 }}>{t.footerUni}</span>
         </div>
       </footer>
+
+      {/* AI Chatbot — fixed overlay, receives current language & page */}
+      <Chatbot lang={lang} currentPage={tab} />
     </>
   );
 }
